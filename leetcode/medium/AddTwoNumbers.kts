@@ -27,37 +27,44 @@ import kotlin.text.*
  * }
  */
 class Solution {
-    fun addTwoNumbers(l1: ListNode?, l2: ListNode?): ListNode? {
-        val sb1 = StringBuilder()
-        val sb2 = StringBuilder()
-        buildNodesAsStrings(sb1, sb2, l1, l2)
-
-        val resultNodeString = (sb1.toString().replace("null", "").reversed().toInt() + sb2.toString().replace("null", "").reversed().toInt()).toString()
-
-        var resultNode: ListNode? = null
-        resultNodeString.forEach { ch ->
-            resultNode = buildNode(resultNode, ch)
-        }
-
-        return resultNode
-    }
-
-    fun buildNodesAsStrings(
-        sb1: StringBuilder,
-        sb2: StringBuilder,
-        l1: ListNode?,
-        l2: ListNode?,
-    ) {
-        sb1.append(l1?.`val`)
-        sb2.append(l2?.`val`)
-        l1?.next?.let {
-            buildNodesAsStrings(sb1, sb2, l1?.next, l2?.next)
+    class Solution {
+        fun addTwoNumbers(l1: ListNode?, l2: ListNode?): ListNode? {
+            val resultWrapper = ListNode(0)
+            var current1 = l1
+            var current2 = l2
+            var inner = resultWrapper
+            var remain = 0
+            while (current1 != null || current2 != null) {
+                val x = current1?.`val` ?: 0
+                val y = current2?.`val` ?: 0
+                val sum = remain + x + y
+                remain = sum / 10
+                inner.next = ListNode(sum % 10)
+                inner = inner.next!!
+                if (current1 != null) current1 = current1.next
+                if (current2 != null) current2 = current2.next
+            }
+            if (remain > 0) {
+                inner.next = ListNode(remain)
+            }
+            return resultWrapper.next
         }
     }
 
-    fun buildNode(currentNode: ListNode?, ch: Char): ListNode {
-        val node = ListNode(ch.digitToInt())
-        node.next = currentNode
-        return node
+    class ListNode(var `val`: Int) {
+        var next: ListNode? = null
+    }
+
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+           val x = Solution().addTwoNumbers(
+                ListNode(2).apply { next = ListNode(4).apply { next = ListNode(9) } },
+                ListNode(5).apply { next = ListNode(6).apply { next = ListNode(4).apply { next = ListNode(9) } } },
+            )
+
+            println(x)
+            val y = 0
+        }
     }
 }
